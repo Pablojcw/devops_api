@@ -46,35 +46,35 @@ def create_monitoring_TI(test_config=None):
     @app.get("/equipment")
     def list_equipment():
         """
-    Lista todos os equipamentos.
-    ---
-    responses:
-      200:
-        description: Lista de equipamentos
-        schema:
-          type: array
-          items:
-            type: object
-            properties:
-              id:
-                type: integer
-                example: 1
-              asset_tag:
-                type: string
-                example: PAT-001
-              name:
-                type: string
-                example: Notebook Dell
-              type:
-                type: string
-                example: Notebook
-              responsible:
-                type: string
-                example: Pablo
-              status:
-                type: string
-                example: ativo
-    """
+        Lista todos os equipamentos.
+        ---
+        responses:
+          200:
+            description: Lista de equipamentos
+            schema:
+              type: array
+              items:
+                type: object
+                properties:
+                  id:
+                    type: integer
+                    example: 1
+                  asset_tag:
+                    type: string
+                    example: PAT-001
+                  name:
+                    type: string
+                    example: Notebook Dell
+                  type:
+                    type: string
+                    example: Notebook
+                  responsible:
+                    type: string
+                    example: Pablo
+                  status:
+                    type: string
+                    example: ativo
+        """
         equipment = Equipment.query.order_by(Equipment.id).all()
 
         return jsonify(
@@ -83,6 +83,46 @@ def create_monitoring_TI(test_config=None):
 
     @app.post("/equipment")
     def create_equipment():
+        """
+        Cadastrar um novo equipamento.
+        ---
+        parameters:
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Notebook Dell
+                responsible:
+                  type: string
+                  example: Pablo
+                asset_tag:
+                  type: string
+                  example: PAT-001
+                type:
+                  type: string
+                  example: Notebook
+                status:
+                  type: string
+                  example: ativo
+        responses:
+          201:
+            description: Equipamento cadastrado com sucesso
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Equipamento cadastrado com sucesso.
+                equipment:
+                  type: object
+                  example: {id: 1, name: Notebook Dell, responsible: Pablo, asset_tag: PAT-001, type: Notebook, status: ativo}
+          400:
+            description: Campo incompleto
+        """
         payload = request.get_json(silent=True) or {}
 
         name = payload.get("name")
@@ -111,6 +151,50 @@ def create_monitoring_TI(test_config=None):
 
     @app.get("/equipment/<int:equipment_id>")
     def get_equipment(equipment_id):
+        """
+        Obter informações de um equipamento específico.
+        ---
+        parameters:
+          - in: path
+            name: equipment_id
+            required: true
+            type: integer
+            example: 1
+
+        responses:
+          200:
+            description: Informações do equipamento
+            schema:
+              type: object
+              properties:
+                id:
+                  type: integer
+                  example: 1
+                asset_tag:
+                  type: string
+                  example: PAT-001
+                name:
+                  type: string
+                  example: Notebook Dell
+                type:
+                  type: string
+                  example: Notebook
+                responsible:
+                  type: string
+                  example: Pablo
+                status:
+                  type: string
+                  example: ativo
+
+          404:
+            description: Equipamento não encontrado
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: Equipamento não encontrado.
+        """
         equipment = db.session.get(Equipment, equipment_id)
 
         if not equipment:
@@ -123,21 +207,111 @@ def create_monitoring_TI(test_config=None):
 
     @app.put("/equipment/<int:equipment_id>")
     def put_equipment(equipment_id):
+        """
+        Atualizar informações de um equipamento específico.
+        ---
+        parameters:
+          - in: path
+            name: equipment_id
+            required: true
+            type: integer
+            example: 1
+
+          - in: body
+            name: body
+            required: true
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Notebook Dell
+                responsible:
+                  type: string
+                  example: Pablo
+                status:
+                  type: string
+                  example: ativo
+                asset_tag:
+                  type: string
+                  example: PAT-001
+                
+                
+
+        responses:
+          200:
+            description: Equipamento atualizado com sucesso
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Equipamento atualizado com sucesso.
+                equipment:
+                  type: object
+                  example:
+                    id: 1
+                    name: Notebook Dell
+                    responsible: Pablo
+                    asset_tag: PAT-001
+                    type: Notebook
+                    status: ativo
+
+          404:
+            description: Equipamento não encontrado
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: Equipamento não encontrado.
+        """
         equipment = db.session.get(Equipment, equipment_id)
 
         if not equipment:
             return jsonify(error="Equipamento não encontrado."), 404
 
-        payload = request.get_json(silent = True) or {}
+        payload = request.get_json(silent=True) or {}
+
         equipment.name = payload.get("name", equipment.name)
         equipment.responsible = payload.get("responsible", equipment.responsible)
         equipment.status = payload.get("status", equipment.status)
+
         db.session.commit()
 
-        return jsonify(message="Equipamento atualizado com sucesso.",equipment=equipment.to_dict()), 200
+        return jsonify(
+            message="Equipamento atualizado com sucesso.",
+            equipment=equipment.to_dict()
+        ), 200
 
     @app.delete("/equipment/<int:equipment_id>")
     def delete_equipment(equipment_id):
+        """
+        excluir um equipamento especifico.
+        ---
+        parameters:
+          - in: path
+            name: equipment_id
+            required: true
+            type: integer
+        responses:
+          200:
+            description: Equipamento Excluido com Sucesso
+            schema:
+              type: object
+              properties:
+                message:
+                  type: string
+                  example: Equipamento Excluido com Sucesso
+          404:
+            description: Equipamento não encontrado
+            schema:
+              type: object
+              properties:
+                error:
+                  type: string
+                  example: Equipamento não encontrado.
+        """
         equipment = db.session.get(Equipment, equipment_id)
 
         if not equipment: 
