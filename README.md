@@ -1,4 +1,4 @@
-# DevOps API
+# Gerenciador de Maquinas Exemplo de devOps CodeFactory
 
 API REST para gerenciamento de equipamentos, desenvolvida como projeto de estudo
 de DevOps. A aplicação permite cadastrar, consultar, atualizar e excluir
