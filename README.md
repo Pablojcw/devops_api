@@ -116,9 +116,3 @@ Para executar os testes automatizados:
 ```bash
 pytest
 ```
-
-## Licença
-
-Este projeto ainda não possui um arquivo de licença definido. Até que uma
-licença seja adicionada ao repositório, os direitos de uso, cópia e
-distribuição permanecem reservados ao autor.
